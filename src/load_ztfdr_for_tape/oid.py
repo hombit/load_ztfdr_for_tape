@@ -3,6 +3,11 @@
 from dataclasses import dataclass
 from typing import cast
 
+from load_ztfdr_for_tape.bands import (ZTF_BAND_CHAR_TO_NUMBER,
+                                       ZTF_BAND_CHAR_TO_STRING, ZTF_BAND_CHARS,
+                                       ZTF_BAND_NAMES, ZTF_BAND_NUMBER_TO_CHAR,
+                                       ZTF_BAND_STRING_TO_NUMBER)
+
 __all__ = ['OIDParts']
 
 
@@ -30,8 +35,14 @@ class OIDParts:
         # Convert band to a number if it is a single char or a band name.
         if isinstance(self.band, str):
             band = cast(str, self.band)
-            band = band.removeprefix('z')
-            self.band = 'gri'.index(band) + 1
+            if len(band) == 1:
+                self.band = ZTF_BAND_CHAR_TO_NUMBER[band]
+            elif len(band) > 1:
+                self.band = ZTF_BAND_STRING_TO_NUMBER[band]
+            else:
+                raise ValueError(
+                    f'Invalid band: {band}, should be one of {",".join(ZTF_BAND_NAMES + ZTF_BAND_CHARS)}'
+                )
 
     @classmethod
     def from_oid(cls, oid: int) -> 'OIDParts':
@@ -59,9 +70,9 @@ class OIDParts:
     @property
     def band_char(self) -> str:
         """Single-character band name, one of g,r,i."""
-        return 'gri'[self.band - 1]
+        return ZTF_BAND_NUMBER_TO_CHAR[self.band]
 
     @property
     def band_name(self) -> str:
         """ZTF DR band name, one of zg,zr,zi."""
-        return f'z{self.band_char}'
+        return ZTF_BAND_CHAR_TO_STRING[self.band_char]
