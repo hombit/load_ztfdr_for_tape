@@ -11,3 +11,4 @@ def test_parse_file_path():
     assert parsed.qid == 3
     assert parsed.dr == 19
     assert parsed.start_oid == 695216300000000
+    assert parsed.stop_oid == 695216400000000
