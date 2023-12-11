@@ -1,0 +1,18 @@
+# Changes here will be overwritten by Copier
+_commit: v1.4.5
+_src_path: gh:lincc-frameworks/python-project-template
+author_email: hombit@gmail.com
+author_name: Konstantin Malanchev
+create_example_module: false
+custom_install: true
+include_benchmarks: true
+include_docs: true
+include_notebooks: true
+mypy_type_checking: basic
+package_name: load_ztfdr_for_tape
+preferred_linter: pylint
+project_license: MIT
+project_name: load_ztfdr_for_tape
+project_organization: hombit
+use_gitlfs: none
+use_isort: true
