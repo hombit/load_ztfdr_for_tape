@@ -1,7 +1,7 @@
 """Tools to work with ZTF Data Relase Object IDs (OIDs)."""
 
 from dataclasses import dataclass
-from typing import Self, cast
+from typing import cast
 
 __all__ = ['OIDParts']
 
@@ -34,7 +34,7 @@ class OIDParts:
             self.band = 'gri'.index(band) + 1
 
     @classmethod
-    def from_oid(cls, oid: int) -> Self:
+    def from_oid(cls, oid: int) -> 'OIDParts':
         """Create OIDParts from an OID integer."""
         field, rest = divmod(oid, 10 ** cls.FIELD_OFFSET_DIGITS)
         band, rest = divmod(rest, 10 ** cls.BAND_OFFSET_DIGITS)
