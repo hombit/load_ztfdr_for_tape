@@ -17,6 +17,7 @@ dynamic = ["version"]
 dependencies = [
     "ipykernel", # Support for Jupyter notebooks
 ]
+requires-python = ">=3.9,<4.0"
 
 [project.urls]
 "Source Code" = "https://github.com/hombit/load_ztfdr_for_tape"
