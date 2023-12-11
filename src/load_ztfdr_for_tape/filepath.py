@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Union
+from typing import Iterable, List, Union
 
 from load_ztfdr_for_tape.bands import ZTF_BAND_NAMES
 from load_ztfdr_for_tape.oid import OIDParts
@@ -72,3 +72,21 @@ class ParsedDataFilePath:
         """Maximum possible OID for this file plus one"""
         oid_parts = OIDParts(self.field, self.band, self.ccdid, self.qid + 1, 0)  # type: ignore
         return oid_parts.oid
+
+
+def order_paths_by_oid(paths: Iterable[Union[str, Path]]) -> List[Union[str, Path]]:
+    """Order a list of paths by their OID."""
+    return sorted(paths, key=lambda path: ParsedDataFilePath.from_path(path).start_oid)
+
+
+def get_ordered_paths(directory: Union[str, Path]) -> List[Union[str, Path]]:
+    """Get a list of paths in a directory ordered by their OID.
+
+    It selects all parquet files and orders them in ascending order by their
+    OID. This is useful when needed to get a list of files of the while
+    ZTF DR in order of object IDs.
+    """
+    ordered = order_paths_by_oid(Path(directory).glob('**/*.parquet'))
+    if len(ordered) == 0:
+        raise ValueError(f'No parquet files found in {directory}')
+    return ordered
