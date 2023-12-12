@@ -7,6 +7,8 @@ from typing import Iterable, List, Union
 from load_ztfdr_for_tape.bands import ZTF_BAND_NAMES
 from load_ztfdr_for_tape.oid import OIDParts
 
+__all__ = ['ParsedDataFilePath', 'get_ordered_paths', 'order_paths_by_oid']
+
 
 @dataclass
 class ParsedDataFilePath:
