@@ -1,4 +1,6 @@
-from load_ztfdr_for_tape.filepath import ParsedDataFilePath, order_paths_by_oid
+from load_ztfdr_for_tape.filepath import (ParsedDataFilePath,
+                                          get_ordered_paths,
+                                          order_paths_by_oid)
 
 
 def test_parse_file_path():
@@ -35,4 +37,14 @@ def test_order_paths_by_oid():
         'ztf_000695_zr_c15_q4_dr19.parquet',
         'ztf_000695_zi_c15_q4_dr19.parquet',
         'ztf_000695_zi_c16_q3_dr19.parquet',
+    ]
+
+
+def test_get_ordered_paths(lc_dr19):
+    ordered = get_ordered_paths(lc_dr19)
+
+    assert ordered == [
+        lc_dr19 / '0' / 'field000202' / 'ztf_000202_zg_c12_q1_dr19.parquet',
+        lc_dr19 / '1' / 'field001518' / 'ztf_001518_zg_c01_q2_dr19.parquet',
+        lc_dr19 / '1' / 'field001518' / 'ztf_001518_zr_c01_q2_dr19.parquet',
     ]
