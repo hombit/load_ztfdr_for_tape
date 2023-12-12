@@ -68,7 +68,7 @@ def test_load_source_frame(lc_dr19):
     computed = df.compute()
 
     # Check size of the dataframe
-    assert df.shape[0].compute() == computed.shape[0] == count_items(lc_dr19, columns.SOURCE_COLUMNS[0])
+    assert df.shape[0].compute() == computed.shape[0] == count_items(lc_dr19, columns.TIME_DOMAIN_COLUMNS[0])
 
     # Check index
     assert computed.index.name == columns.ID_COLUMN
