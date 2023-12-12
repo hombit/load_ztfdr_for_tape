@@ -1,3 +1,6 @@
+from pathlib import Path
+from typing import cast
+
 import numpy as np
 import polars as pl
 import pyarrow.parquet as pq
@@ -10,14 +13,19 @@ from load_ztfdr_for_tape.dask import (derive_dd_divisions, load_object_frame,
 from load_ztfdr_for_tape.filepath import get_ordered_paths
 
 
-def count_rows(path):
+def count_rows(path: Path) -> int:
     paths = path.glob('**/*.parquet')
     return sum(pq.read_metadata(p).num_rows for p in paths)
 
 
-def count_items(path, column):
+def count_items_single_file(path: Path, column: str) -> int:
+    count = cast(int, pl.read_parquet(path, columns=[column])[column].list.len().sum())
+    return count
+
+
+def count_items(path: Path, column: str) -> int:
     paths = path.glob('**/*.parquet')
-    count = sum(pl.read_parquet(p, columns=[column])[column].list.len().sum() for p in paths)
+    count = sum(count_items_single_file(p, column) for p in paths)
     return count
 
 
