@@ -11,40 +11,34 @@
 This project was automatically generated using the LINCC-Frameworks 
 [python-project-template](https://github.com/lincc-frameworks/python-project-template).
 
-A repository badge was added to show that this project uses the python-project-template, however it's up to
-you whether or not you'd like to display it!
+Get Dask DataFrames from ZTF DRs for [LINCC Frameworks' Tape](https://github.com/lincc-frameworks/tape/).
+Basically, you need a single function call to get "object" (metadata) and "source" (photometry per detection) tables from a ZTF DR:
 
-For more information about the project template see the 
-[documentation](https://lincc-ppt.readthedocs.io/en/latest/).
+```python
+from load_ztfdr_for_tape import load_object_source_frames_from_path
+from tape import Ensemble, ColumnMapper
 
-## Dev Guide - Getting Started
+# Replace with the actual path, here we use few files from the test data
+ztf_dr_path = './tests/data/lc_dr19'
+objects, sources = load_object_source_frames_from_path(ztf_dr_path)
+column_mapper = ColumnMapper(
+    id_col='objectid',
+    time_col='hmjd',
+    flux_col='mag',
+    err_col='magerr',
+    band_col='filterid',
+)
 
-Before installing any dependencies or writing code, it's a great idea to create a
-virtual environment. LINCC-Frameworks engineers primarily use `conda` to manage virtual
-environments. If you have conda installed locally, you can run the following to
-create and activate a new environment.
-
+# Replace `False` with dask.distributed.Client instance for parallel execution
+ens = Ensemble(client=False)
+ens.from_dask_dataframe(
+    object_frame=objects,
+    source_frame=sources,
+    column_mapper=column_mapper,
+    # Do not make an initial sync of the tables
+    sync_tables=False,
+    # We did sort the tables by objectid
+    sorted=True,
+    sort=False,
+)
 ```
->> conda create env -n <env_name> python=3.10
->> conda activate <env_name>
-```
-
-Once you have created a new environment, you can install this project for local
-development using the following commands:
-
-```
->> pip install -e .'[dev]'
->> pre-commit install
->> conda install pandoc
-```
-
-Notes:
-1) The single quotes around `'[dev]'` may not be required for your operating system.
-2) `pre-commit install` will initialize pre-commit for this local repository, so
-   that a set of tests will be run prior to completing a local commit. For more
-   information, see the Python Project Template documentation on 
-   [pre-commit](https://lincc-ppt.readthedocs.io/en/latest/practices/precommit.html)
-3) Install `pandoc` allows you to verify that automatic rendering of Jupyter notebooks
-   into documentation for ReadTheDocs works as expected. For more information, see
-   the Python Project Template documentation on
-   [Sphinx and Python Notebooks](https://lincc-ppt.readthedocs.io/en/latest/practices/sphinx.html#python-notebooks)
