@@ -1,9 +1,11 @@
 import numpy as np
 import polars as pl
 import pyarrow.parquet as pq
+from numpy.testing import assert_array_equal
 
 from load_ztfdr_for_tape import columns
 from load_ztfdr_for_tape.dask import (derive_dd_divisions, load_object_frame,
+                                      load_object_source_frames_from_path,
                                       load_source_frame)
 from load_ztfdr_for_tape.filepath import get_ordered_paths
 
@@ -39,8 +41,11 @@ def test_load_object_frame(lc_dr19):
     # Check size of the dataframe
     assert df.shape[0].compute() == computed.shape[0] == count_rows(lc_dr19)
 
-    # Check columns
+    # Check index
     assert computed.index.name == columns.ID_COLUMN
+    assert computed.index.is_unique
+
+    # Check columns
     assert set(computed.columns) == set(columns.OBJECT_COLUMNS)
 
 
@@ -57,6 +62,23 @@ def test_load_source_frame(lc_dr19):
     # Check size of the dataframe
     assert df.shape[0].compute() == computed.shape[0] == count_items(lc_dr19, columns.SOURCE_COLUMNS[0])
 
-    # Check columns
+    # Check index
     assert computed.index.name == columns.ID_COLUMN
+    assert not computed.index.is_unique
+
+    # Check columns
     assert set(computed.columns) == set(columns.SOURCE_COLUMNS)
+
+
+def test_load_object_source_frames_from_path(lc_dr19):
+    objects, sources = load_object_source_frames_from_path(lc_dr19)
+
+    # Check divisions
+    assert all(division is not None for division in objects.divisions), "Missing divisions"
+    assert objects.divisions == sources.divisions
+
+    objects_computed = objects.compute()
+    sources_computed = sources.compute()
+
+    # Check index matches
+    assert_array_equal(np.unique(objects_computed.index), np.unique(sources_computed.index))
